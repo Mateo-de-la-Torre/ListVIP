@@ -1,15 +1,16 @@
-using Application.Eventos.Services;
-using Application.Eventos.Interfaces;
+using Application.Auth.Interfaces;
 using Application.Auth.Services;
+using Application.Eventos.Interfaces;
+using Application.Eventos.Services;
 using Application.Users.Interfaces;
+using Infrastructure.Auth;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Infrastructure.Auth;
-using Application.Auth.Interfaces;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Presentation.Converters;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,7 +57,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // Controllers
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+        options.JsonSerializerOptions.Converters.Add(new TwoDecimal()); //2 decimales para los precios
+    });
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
