@@ -50,4 +50,39 @@ public class Evento
             Active = true
         };
     }
+
+    public static Evento Update(Evento evento, string? name, DateTime? date, string? location, int? capacity, decimal? ticketPrice)
+    {
+        if (name != null)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("El nombre del evento es requerido.");
+            evento.Name = name;
+        }
+        if (date != null)
+        {
+            if (date <= DateTime.UtcNow)
+                throw new ArgumentException("La fecha del evento debe ser futura.");
+            evento.Date = date.Value;
+        }
+        if (location != null)
+        {
+            if (string.IsNullOrWhiteSpace(location))
+                throw new ArgumentException("El lugar del evento es requerido.");
+            evento.Location = location;
+        }
+        if (capacity != null)
+        {
+            if (capacity <= 0)
+                throw new ArgumentException("La capacidad debe ser mayor a 0.");
+            evento.Capacity = capacity.Value;
+        }
+        if (ticketPrice != null)
+        {
+            if (ticketPrice < 0)
+                throw new ArgumentException("El precio no puede ser negativo.");
+            evento.TicketPrice = ticketPrice.Value;
+        }
+        return evento;
+    }
 }
