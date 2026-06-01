@@ -24,10 +24,21 @@ public class UserRepository : IUserRepository
         return await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
     }
 
+    public async Task<Usuario?> GetByIdAsync(int id)
+    {
+        return await _context.Usuarios.FindAsync(id);
+    }
+
     public async Task<Usuario> CreateAsync(Usuario usuario)
     {
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();
         return usuario;
+    }
+
+    public async Task UpdatePasswordAsync(Usuario usuario, string newHashedPassword)
+    {
+        usuario.Password = newHashedPassword;
+        await _context.SaveChangesAsync();
     }
 }
