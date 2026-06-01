@@ -2,6 +2,8 @@ using Application.Auth.Interfaces;
 using Application.Auth.Services;
 using Application.Eventos.Interfaces;
 using Application.Eventos.Services;
+using Application.Invitaciones.Interfaces;
+using Application.Invitaciones.Services;
 using Application.Users.Interfaces;
 using Infrastructure.Auth;
 using Infrastructure.Data;
@@ -28,6 +30,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddHttpClient<IEmailService, ResendEmailService>();
+builder.Services.AddScoped<IInvitacionRepository, InvitacionRepository>();
+builder.Services.AddScoped<InvitacionService>();
 
 //JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -76,9 +81,22 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+};
 
-app.UseHttpsRedirection();
+// Middleware global para manejar excepciones y devolver un mensaje JSON
+app.UseExceptionHandler(appError =>
+{
+    appError.Run(async context =>
+    {
+        context.Response.StatusCode = 400;
+        context.Response.ContentType = "application/json";
+        var error = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+        if (error != null)
+            await context.Response.WriteAsync($"{{\"message\": \"{error.Error.Message}\"}}");
+    });
+});
+
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

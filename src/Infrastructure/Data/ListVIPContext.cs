@@ -16,6 +16,7 @@ public class ListVIPContext : DbContext
     public DbSet<PromotorEvento> PromotorEventos { get; set; }
     public DbSet<Invitado> Invitados { get; set; }
     public DbSet<RegistroIngreso> RegistrosIngreso { get; set; }
+    public DbSet<Invitacion> Invitaciones { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -74,6 +75,13 @@ public class ListVIPContext : DbContext
             .HasOne(r => r.Evento)
             .WithMany(e => e.RegistrosIngreso)
             .HasForeignKey(r => r.EventoId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Organizador → Invitacion (1 a N)
+        modelBuilder.Entity<Invitacion>()
+            .HasOne<Organizador>()
+            .WithMany()
+            .HasForeignKey(i => i.OrganizadorId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
