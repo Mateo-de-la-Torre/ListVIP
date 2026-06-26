@@ -1,13 +1,20 @@
 using Application.Auth.Interfaces;
 using Application.Auth.Services;
+using Application.Common.Interfaces;
 using Application.Eventos.Interfaces;
 using Application.Eventos.Services;
 using Application.Invitaciones.Interfaces;
 using Application.Invitaciones.Services;
+using Application.Invitados.Interfaces;
+using Application.Invitados.Services;
+using Application.PromotorEventos.Interfaces;
+using Application.PromotorEventos.Services;
 using Application.Users.Interfaces;
+using Application.Users.Services;
 using Infrastructure.Auth;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -33,6 +40,12 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddHttpClient<IEmailService, ResendEmailService>();
 builder.Services.AddScoped<IInvitacionRepository, InvitacionRepository>();
 builder.Services.AddScoped<InvitacionService>();
+builder.Services.AddScoped<IPromotorEventoRepository, PromotorEventoRepository>();
+builder.Services.AddScoped<PromotorEventoService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IInvitadoRepository, InvitadoRepository>();
+builder.Services.AddScoped<InvitadoService>();
+builder.Services.AddScoped<IQrService, QrService>();
 
 //JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -46,7 +59,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"] !))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!))
         };
 
         options.Events = new JwtBearerEvents
@@ -57,6 +70,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 context.Response.StatusCode = 401;
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsync("{\"message\": \"Necesitas autenticarte para acceder a este recurso.\"}");
+            },
+            OnForbidden = async context =>
+            {
+                context.Response.StatusCode = 403;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsync("{\"message\": \"No tenés permisos para acceder a este recurso.\"}");
             }
         };
     });

@@ -1,3 +1,4 @@
+using Application.Eventos.DTOs;
 using Application.Eventos.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
@@ -6,56 +7,66 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class EventoRepository : IEventoRepository
+public class EventoRepository : Repository<Evento>, IEventoRepository
 {
-    private readonly ListVIPContext _context;
+    public EventoRepository(ListVIPContext context) : base(context) { }
 
-    public EventoRepository(ListVIPContext context)
-    {
-        _context = context;
-    }
-
-    public async Task<Evento> CreateAsync(Evento evento)
+    public async Task<EventoDto> CreateEventoAsync(Evento evento)
     {
         _context.Eventos.Add(evento);
         await _context.SaveChangesAsync();
-        return evento;
+        return ToDto(evento);
     }
 
-    public async Task<IEnumerable<Evento>> GetAllAsync(int organizadorId)
+    public async Task<IEnumerable<EventoDto>> GetAllAsync(int organizadorId)
     {
-        return await _context.Eventos.Where(e => e.OrganizadorId == organizadorId).ToListAsync();
-    } 
-
-    public async Task<Evento?> GetByIdAsync(int id, int organizadorId)
-    {
-        return await _context.Eventos.FirstOrDefaultAsync(e => e.Id == id && e.OrganizadorId == organizadorId);
+        return await _context.Eventos
+            .Where(e => e.OrganizadorId == organizadorId && e.Active)
+            .Select(e => ToDto(e))
+            .ToListAsync();
     }
 
-    public async Task<Evento> UpdateAsync(Evento evento)
+    public async Task<EventoDto?> GetByIdAsync(int id, int organizadorId)
     {
-        _context.Eventos.Update(evento);
+        var e = await _context.Eventos.FirstOrDefaultAsync(e => e.Id == id && e.OrganizadorId == organizadorId);
+        return e == null ? null : ToDto(e);
+    }
+
+    public async Task<EventoDto?> UpdateAsync(int id, UpdateEventoDto dto, int organizadorId)
+    {
+        var evento = await _context.Eventos.FirstOrDefaultAsync(e => e.Id == id && e.OrganizadorId == organizadorId && e.Active);
+        if (evento == null) return null;
+        Evento.Update(evento, dto.Name, dto.Date, dto.Location, dto.Capacity, dto.TicketPrice);
         await _context.SaveChangesAsync();
-        return evento;
+        return ToDto(evento);
     }
 
-    public async Task<Evento?> ChangeStatusAsync(int id, EventStatus status, int organizadorId)
+    public async Task<EventoDto?> ChangeStatusAsync(int id, EventStatus status, int organizadorId)
     {
         var evento = await _context.Eventos.FirstOrDefaultAsync(e => e.Id == id && e.OrganizadorId == organizadorId);
-        if (evento == null)
-            return null;
+        if (evento == null) return null;
         evento.EventStatus = status;
         await _context.SaveChangesAsync();
-        return evento;
+        return ToDto(evento);
     }
 
-    public async Task<Evento?> DeleteAsync(int id, int organizadorId)
+    public async Task<EventoDto?> DeleteAsync(int id, int organizadorId)
     {
         var evento = await _context.Eventos.FirstOrDefaultAsync(e => e.Id == id && e.OrganizadorId == organizadorId);
-        if (evento == null)
-            return null;
+        if (evento == null) return null;
         evento.Active = false;
         await _context.SaveChangesAsync();
-        return evento;
+        return ToDto(evento);
     }
+
+    private static EventoDto ToDto(Evento e) => new()
+    {
+        Id = e.Id,
+        Name = e.Name,
+        Date = e.Date,
+        Location = e.Location,
+        Capacity = e.Capacity,
+        TicketPrice = e.TicketPrice,
+        EventStatus = e.EventStatus
+    };
 }

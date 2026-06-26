@@ -13,7 +13,7 @@ public class Evento
     public string Location { get; set; } = null!;
     public int Capacity { get; set; }
     public decimal TicketPrice { get; set; }
-    public EventStatus EventStatus { get; set; } = EventStatus.Borrador;
+    public EventStatus EventStatus { get; set; } = EventStatus.Publicado;
     public bool Active { get; set; } = true;
 
     public int OrganizadorId { get; set; }
@@ -46,7 +46,7 @@ public class Evento
             Capacity = capacity,
             TicketPrice = ticketPrice,
             OrganizadorId = organizadorId,
-            EventStatus = EventStatus.Borrador,
+            EventStatus = EventStatus.Publicado,
             Active = true
         };
     }

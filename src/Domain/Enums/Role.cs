@@ -7,6 +7,5 @@ namespace Domain.Enums;
 public enum Role
 {
     Organizador,
-    Promotor,
-    Portero
+    Promotor
 }

@@ -1,34 +1,22 @@
-﻿using Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using Application.Invitaciones.Interfaces;
+﻿using Application.Invitaciones.Interfaces;
 using Domain.Entities;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories
+namespace Infrastructure.Repositories;
+
+public class InvitacionRepository : Repository<Invitacion>, IInvitacionRepository
 {
-    public class InvitacionRepository : IInvitacionRepository
+    public InvitacionRepository(ListVIPContext context) : base(context) { }
+
+    public Task<Invitacion?> GetByTokenAsync(string token)
     {
-        private readonly ListVIPContext _context;
+        return _context.Invitaciones.FirstOrDefaultAsync(i => i.Token == token);
+    }
 
-        public InvitacionRepository(ListVIPContext context)
-        {
-            _context = context;
-        }
-
-        public Task<Invitacion?> GetByTokenAsync(string token)
-        {
-            return _context.Invitaciones.FirstOrDefaultAsync(i => i.Token == token);
-        }
-
-        public Task CreateAsync(Invitacion invitacion)
-        {
-            _context.Invitaciones.Add(invitacion);
-            return _context.SaveChangesAsync();
-        }
-
-        public async Task MarkAsUsedAsync(Invitacion invitacion)
-        {
-            invitacion.Used = true;
-            await _context.SaveChangesAsync();
-        }
+    public async Task MarkAsUsedAsync(Invitacion invitacion)
+    {
+        invitacion.Used = true;
+        await _context.SaveChangesAsync();
     }
 }

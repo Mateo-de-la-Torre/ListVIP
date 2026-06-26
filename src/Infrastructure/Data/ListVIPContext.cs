@@ -11,7 +11,6 @@ public class ListVIPContext : DbContext
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Organizador> Organizadores { get; set; }
     public DbSet<Promotor> Promotores { get; set; }
-    public DbSet<Portero> Porteros { get; set; }
     public DbSet<Evento> Eventos { get; set; }
     public DbSet<PromotorEvento> PromotorEventos { get; set; }
     public DbSet<Invitado> Invitados { get; set; }
@@ -20,13 +19,11 @@ public class ListVIPContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Herencia: tabla única para Usuario, Organizador, Promotor y Portero
         modelBuilder.Entity<Usuario>()
             .HasDiscriminator<string>("Discriminator")
             .HasValue<Usuario>("Usuario")
             .HasValue<Organizador>("Organizador")
-            .HasValue<Promotor>("Promotor")
-            .HasValue<Portero>("Portero");
+            .HasValue<Promotor>("Promotor");
 
         // Organizador → Evento (1 a N)
         modelBuilder.Entity<Evento>()
@@ -63,13 +60,6 @@ public class ListVIPContext : DbContext
             .HasForeignKey<RegistroIngreso>(r => r.InvitadoId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Portero → RegistroIngreso (1 a N)
-        modelBuilder.Entity<RegistroIngreso>()
-            .HasOne(r => r.Portero)
-            .WithMany(p => p.RegistrosIngreso)
-            .HasForeignKey(r => r.PorteroId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         // Evento → RegistroIngreso (1 a N)
         modelBuilder.Entity<RegistroIngreso>()
             .HasOne(r => r.Evento)
@@ -82,6 +72,13 @@ public class ListVIPContext : DbContext
             .HasOne<Organizador>()
             .WithMany()
             .HasForeignKey(i => i.OrganizadorId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Evento → Invitacion (1 a N)
+        modelBuilder.Entity<Invitacion>()
+            .HasOne<Evento>()
+            .WithMany()
+            .HasForeignKey(i => i.EventoId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
