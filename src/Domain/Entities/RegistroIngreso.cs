@@ -11,8 +11,6 @@ public class RegistroIngreso
 
     public int InvitadoId { get; set; }
     public Invitado Invitado { get; set; } = null!;
-    public int PorteroId { get; set; }
-    public Portero Portero { get; set; } = null!;
     public int EventoId { get; set; }
     public Evento Evento { get; set; } = null!;
 }

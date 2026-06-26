@@ -8,7 +8,7 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Organizador")]
 public class EventoController : ControllerBase
 {
     private readonly EventoService _eventoService;
@@ -18,15 +18,15 @@ public class EventoController : ControllerBase
         _eventoService = eventoService;
     }
 
-    [HttpPost("create")]
+    [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateEventoDto dto)
     {
         var organizadorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var evento = await _eventoService.CreateAsync(dto, organizadorId);
-        return CreatedAtAction(nameof(Create), new { id = evento.Id }, evento);
+        return CreatedAtAction(nameof(GetById), new { id = evento.Id }, evento);
     }
 
-    [HttpGet("all")]
+    [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var organizadorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);

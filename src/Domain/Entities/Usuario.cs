@@ -38,7 +38,6 @@ public class Usuario
         {
             Role.Organizador => new Organizador { Name = name, Lastname = lastName, Email = email, Password = password, Phone = phone, Role = role, Active = true },
             Role.Promotor => new Promotor { Name = name, Lastname = lastName, Email = email, Password = password, Phone = phone, Role = role, Active = true },
-            Role.Portero => new Portero { Name = name, Lastname = lastName, Email = email, Password = password, Phone = phone, Role = role, Active = true },
             _ => throw new ArgumentException("Rol inválido.")
         };
     }

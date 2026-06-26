@@ -6,9 +6,7 @@ namespace Domain.Enums;
 
 public enum EventStatus
 {
-    Borrador,
     Publicado,
     EnCurso,
-    Finalizado,
-    Cancelado
+    Finalizado
 }

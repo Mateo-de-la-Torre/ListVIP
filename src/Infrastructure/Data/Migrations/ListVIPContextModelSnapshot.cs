@@ -71,17 +71,20 @@ namespace Infrastructure.Data.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal?>("Commission")
+                        .HasColumnType("decimal(65,30)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("EventoId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("OrganizadorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.Property<string>("Token")
@@ -92,6 +95,8 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EventoId");
 
                     b.HasIndex("OrganizadorId");
 
@@ -108,6 +113,10 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<bool>("Active")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("GuestStatus")
                         .HasColumnType("int");
@@ -142,10 +151,10 @@ namespace Infrastructure.Data.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("tinyint(1)");
+                    b.Property<decimal?>("Commission")
+                        .HasColumnType("decimal(65,30)");
 
-                    b.Property<decimal>("Commission")
+                    b.Property<decimal?>("CommissionAmount")
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<int>("CommissionStatus")
@@ -186,17 +195,12 @@ namespace Infrastructure.Data.Migrations
                     b.Property<int>("InvitadoId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PorteroId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EventoId");
 
                     b.HasIndex("InvitadoId")
                         .IsUnique();
-
-                    b.HasIndex("PorteroId");
 
                     b.ToTable("RegistrosIngreso");
                 });
@@ -256,13 +260,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasDiscriminator().HasValue("Organizador");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Portero", b =>
-                {
-                    b.HasBaseType("Domain.Entities.Usuario");
-
-                    b.HasDiscriminator().HasValue("Portero");
-                });
-
             modelBuilder.Entity("Domain.Entities.Promotor", b =>
                 {
                     b.HasBaseType("Domain.Entities.Usuario");
@@ -283,6 +280,12 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Domain.Entities.Invitacion", b =>
                 {
+                    b.HasOne("Domain.Entities.Evento", null)
+                        .WithMany()
+                        .HasForeignKey("EventoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Organizador", null)
                         .WithMany()
                         .HasForeignKey("OrganizadorId")
@@ -334,17 +337,9 @@ namespace Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Portero", "Portero")
-                        .WithMany("RegistrosIngreso")
-                        .HasForeignKey("PorteroId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Evento");
 
                     b.Navigation("Invitado");
-
-                    b.Navigation("Portero");
                 });
 
             modelBuilder.Entity("Domain.Entities.Evento", b =>
@@ -367,11 +362,6 @@ namespace Infrastructure.Data.Migrations
             modelBuilder.Entity("Domain.Entities.Organizador", b =>
                 {
                     b.Navigation("Eventos");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Portero", b =>
-                {
-                    b.Navigation("RegistrosIngreso");
                 });
 
             modelBuilder.Entity("Domain.Entities.Promotor", b =>

@@ -11,6 +11,7 @@ public class Invitado
     public string Name { get; set; } = null!;
     public string Lastname { get; set; } = null!;
     public string Phone { get; set; } = null!;
+    public string Email { get; set; } = null!;
     public GuestStatus GuestStatus { get; set; } = GuestStatus.EnLista;
     public bool Active { get; set; } = true;
 

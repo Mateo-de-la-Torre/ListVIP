@@ -8,7 +8,7 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = "Organizador")]
 public class InvitacionController : ControllerBase
 {
     private readonly InvitacionService _invitacionService;
@@ -22,7 +22,7 @@ public class InvitacionController : ControllerBase
     public async Task<IActionResult> SendInvitacion([FromBody] SendInvitacionDto dto)
     {
         var organizadorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        await _invitacionService.SendInvitacionAsync(dto.Email, dto.Role, organizadorId);
+        await _invitacionService.SendInvitacionAsync(dto.Email, organizadorId, dto.EventoId, dto.Commission);
         return Ok(new { message = "Invitación enviada correctamente" });
     }
 }
