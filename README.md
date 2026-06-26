@@ -5,7 +5,7 @@
 
 *Programación IV — 2° TUP 4 — UTN*
 
-*Integrantes: Mateo de la Torre, Gianfranco Dealbera*
+*Integrantes: Mateo de la Torre*
 
 ---
 
