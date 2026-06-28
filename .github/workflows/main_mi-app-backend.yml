@@ -70,7 +70,7 @@ jobs:
         run: dotnet tool install --global dotnet-ef
 
       - name: Update databas with EF Core migrations
-      - env:
+        env:
           ConnectionStrings__DefaultConnection:  ${{ secrets.DB_CONNECTION_STRING }}
         run: dotnet ef database update --project src/Infrastructure/Infrastructure.csproj --startup-project src/Presentation/Presentation.csproj
 
