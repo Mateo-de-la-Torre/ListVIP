@@ -66,6 +66,9 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E0D0E6F8ADF048CAA2DC5C1AAE904961 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_0C13DBD392BD4BD4841AD438B344A483 }}
 
+      - name: Restore
+        run: dotnet restore src/Presentation/Presentation.csproj
+
       - name: Install dotenet-ef tool
         run: dotnet tool install --global dotnet-ef
 
