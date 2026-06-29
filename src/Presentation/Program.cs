@@ -27,7 +27,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ListVIPContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+        new MySqlServerVersion(new Version(8, 0, 0))
     ));
 
 // Servicios
