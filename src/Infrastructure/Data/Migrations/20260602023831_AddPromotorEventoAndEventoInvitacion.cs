@@ -10,11 +10,29 @@ namespace Infrastructure.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Already applied by previous partial migration run
-            // migrationBuilder.DropColumn(name: "Active", table: "PromotorEventos");
-            // migrationBuilder.AlterColumn<decimal>(name: "Commission", ...);
-            // migrationBuilder.AddColumn<int>(name: "EventoId", table: "Invitaciones", ...);
-            // migrationBuilder.CreateIndex(name: "IX_Invitaciones_EventoId", ...);
+            migrationBuilder.DropColumn(
+                name: "Active",
+                table: "PromotorEventos");
+
+            migrationBuilder.AlterColumn<decimal>(
+                name: "Commission",
+                table: "PromotorEventos",
+                type: "decimal(65,30)",
+                nullable: true,
+                oldClrType: typeof(decimal),
+                oldType: "decimal(65,30)");
+
+            migrationBuilder.AddColumn<int>(
+                name: "EventoId",
+                table: "Invitaciones",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invitaciones_EventoId",
+                table: "Invitaciones",
+                column: "EventoId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Invitaciones_Eventos_EventoId",
